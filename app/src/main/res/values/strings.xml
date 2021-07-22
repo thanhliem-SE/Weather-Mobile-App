@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Weather App</string>
+    <string name="city">City</string>
+    <string name="nation">Country</string>
+    <string name="temp">Temperature</string>
+    <string name="state">State</string>
+    <string name="humidity">Humidity</string>
+    <string name="clouds">Clouds</string>
+    <string name="wind">Wind</string>
+    <string name="last_update">Last Update:</string>
+    <string name="more_day">More Day</string>
+    <string name="city_not_valid">City Name Not Correct!</string>
+    <string name="update">Update:"</string>
+    <string name="get_locaton">Get current locaton</string>
+    <string name="language">Language</string>
+    <string name="set_background">Set background</string>
+    <string name="exit">Exit</string>
+    <string name="vietnamese">Vietnamese</string>
+    <string name="english">English</string>
+    <string name="share">Share</string>
+</resources>

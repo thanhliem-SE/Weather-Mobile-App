@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">App Thoi Tiet</string>
+    <string name="city">Thành phố</string>
+    <string name="nation">Quốc gia</string>
+    <string name="temp">Nhiệt độ</string>
+    <string name="state">Trạng thái</string>
+    <string name="humidity">Độ ẩm</string>
+    <string name="clouds">Mây</string>
+    <string name="wind">Gió</string>
+    <string name="last_update">Cập nhật:</string>
+    <string name="more_day">Các ngày tiếp theo</string>
+    <string name="city_not_valid">Tên thành phố không đúng</string>
+    <string name="update">Cập nhật:"</string>
+    <string name="get_locaton">Lấy vị trí hiện tại</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="set_background">Chỉnh màu nền</string>
+    <string name="exit">Thoát</string>
+    <string name="vietnamese">Tiếng Việt</string>
+    <string name="english">Tiếng Anh</string>
+    <string name="share">Chia sẻ</string>
+</resources>

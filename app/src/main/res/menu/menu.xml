@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_share"
+        android:title="@string/share"/>
+    <item android:id="@+id/menu_get_location"
+        android:title="@string/get_locaton"/>
+    <item android:id="@+id/menu_language"
+        android:title="@string/language">
+        <menu>
+            <item android:id="@+id/language_vi"
+                android:title="@string/vietnamese"/>
+            <item android:id="@+id/language_en"
+                android:title="@string/english"/>
+        </menu>
+    </item>
+    <item android:id="@+id/menu_background"
+        android:title="@string/set_background"/>
+    <item android:id="@+id/menu_exit"
+        android:title="@string/exit"/>
+</menu>
