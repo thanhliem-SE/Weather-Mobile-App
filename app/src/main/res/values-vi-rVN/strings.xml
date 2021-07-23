@@ -19,4 +19,6 @@
     <string name="vietnamese">Tiếng Việt</string>
     <string name="english">Tiếng Anh</string>
     <string name="share">Chia sẻ</string>
+    <string name="srch">Tìm kiếm</string>
+    <string name="comming_soon">Tính năng sắp có</string>
 </resources>

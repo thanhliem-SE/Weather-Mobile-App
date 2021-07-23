@@ -1,16 +1,13 @@
 package com.liem.appthoitiet.activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
-import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import com.liem.appthoitiet.R;
 import com.liem.appthoitiet.adapter.WeatherAdapter;
 import com.liem.appthoitiet.models.Weather;
+import com.liem.appthoitiet.utils.AppLanguageHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,13 +45,34 @@ public class SevenDaysWeatherActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seven_days_weather);
+        getSupportActionBar().hide();
 
+        AppLanguageHelper.setLocale(SevenDaysWeatherActivity.this, getIntent().getStringExtra("lang"));
         initializeUI();
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                // Scrolling down
+                if (dy < 0) {
+                    showHeader();
+                } else {
+                    hideHeader();
+                }
+
             }
         });
     }
@@ -120,5 +139,15 @@ public class SevenDaysWeatherActivity extends AppCompatActivity {
             }
         });
         requestQueue.add(stringRequest);
+    }
+
+    private void hideHeader() {
+        btnBack.setVisibility(View.GONE);
+        txtCity.setVisibility(View.GONE);
+    }
+
+    private void showHeader() {
+        btnBack.setVisibility(View.VISIBLE);
+        txtCity.setVisibility(View.VISIBLE);
     }
 }

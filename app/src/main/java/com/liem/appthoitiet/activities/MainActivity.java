@@ -2,19 +2,22 @@ package com.liem.appthoitiet.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
 
-import android.app.Activity;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -27,22 +30,27 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.liem.appthoitiet.R;
+import com.liem.appthoitiet.utils.AppLanguageHelper;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 
-public class CurrentWeatherActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private EditText edtCity;
     private Button btnGetCity, btnMoreDay;
@@ -50,18 +58,23 @@ public class CurrentWeatherActivity extends AppCompatActivity {
     private ImageView imgIconWeather;
     private String city, lang;
 
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_current_weather);
+        setContentView(R.layout.activity_main);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        loadData();
+        AppLanguageHelper.setLocale(MainActivity.this, lang);
         initializeUI();
 
         btnGetCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 city = edtCity.getText().toString().trim();
-                getCurrentWeatherData(city);
+                getCurrentWeatherData(city, null);
             }
         });
 
@@ -70,7 +83,7 @@ public class CurrentWeatherActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                     city = edtCity.getText().toString().trim();
-                    getCurrentWeatherData(city);
+                    getCurrentWeatherData(city, null);
                 }
                 return false;
             }
@@ -79,15 +92,12 @@ public class CurrentWeatherActivity extends AppCompatActivity {
         btnMoreDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!city.isEmpty()) {
-                    String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=43a4ba75dc3793776a30decf39830cf4&units=metric&lang=" + lang;
-
-                    Intent intent = new Intent(CurrentWeatherActivity.this, SevenDaysWeatherActivity.class);
-                    intent.putExtra("city", city);
-                    intent.putExtra("url", url);
-                    startActivity(intent);
-                } else
-                    Toast.makeText(CurrentWeatherActivity.this, getString(R.string.city_not_valid), Toast.LENGTH_SHORT).show();
+                String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=43a4ba75dc3793776a30decf39830cf4&units=metric&lang=" + lang;
+                Intent intent = new Intent(MainActivity.this, SevenDaysWeatherActivity.class);
+                intent.putExtra("city", city);
+                intent.putExtra("url", url);
+                intent.putExtra("lang", lang);
+                startActivity(intent);
             }
         });
     }
@@ -96,21 +106,23 @@ public class CurrentWeatherActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = this.getSharedPreferences("data", Context.MODE_PRIVATE);
         if (sharedPreferences != null) {
             city = sharedPreferences.getString("city", "");
-//            lang = sharedPreferences.getString("lang", "en");
-            getCurrentWeatherData(city);
+            lang = sharedPreferences.getString("lang", "");
         } else {
-            lang = "Locale.getDefault().toString()";
+            city = "Ho Chi Minh";
+            lang = "en";
         }
     }
 
-    public void getCurrentWeatherData(String city) {
-        String url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + lang;
-        RequestQueue requestQueue = Volley.newRequestQueue(CurrentWeatherActivity.this);
+    public void getCurrentWeatherData(String city, String url) {
+        if (url == null)
+            url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + lang;
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 edtCity.setText("");
                 editDataCity(city);
+                hideSearchBar();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     Long day = jsonObject.getLong("dt");
@@ -144,7 +156,6 @@ public class CurrentWeatherActivity extends AppCompatActivity {
                     txtCurrentDay.setText(getString(R.string.last_update) + " " + simpleDateFormat.format(date));
 
                     CharSequence charSequence = getString(R.string.city);
-                    Log.i("tag", "KQ" + cityName.contains("Thành phố"));
                     if (cityName.contains(charSequence))
                         txtCity.setText(cityName);
                     else
@@ -164,9 +175,8 @@ public class CurrentWeatherActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(CurrentWeatherActivity.this, getString(R.string.city_not_valid), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, getString(R.string.city_not_valid), Toast.LENGTH_SHORT).show();
                         edtCity.setText("");
-                        setEmptyCity();
                     }
                 }
         );
@@ -181,10 +191,10 @@ public class CurrentWeatherActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void editDataLang(String lang){
+    private void editDataLang(String langCode) {
         SharedPreferences sharedPreferences = this.getSharedPreferences("data", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("lang", lang);
+        editor.putString("lang", langCode);
         editor.apply();
     }
 
@@ -202,15 +212,8 @@ public class CurrentWeatherActivity extends AppCompatActivity {
         txtCurrentDay = (TextView) findViewById(R.id.txtCurrenDay);
         imgIconWeather = (ImageView) findViewById(R.id.iconWeather);
 
-        if(Locale.getDefault().toString().equals("vi_VN"))
-            lang = "vi";
-        else
-            lang = "en";
-        loadData();
-    }
-
-    protected void setEmptyCity() {
-        city = "";
+        hideSearchBar();
+        getCurrentWeatherData(city, null);
     }
 
     protected void updateCityName(String cityName) {
@@ -223,13 +226,84 @@ public class CurrentWeatherActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void hideSearchBar() {
+        edtCity.setVisibility(View.GONE);
+        btnGetCity.setVisibility(View.GONE);
+    }
+
+    private void showSearchBar() {
+        edtCity.setVisibility(View.VISIBLE);
+        btnGetCity.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_exit:
-                finish();
+                finishAffinity();
+                System.exit(0);
+                return true;
+            case R.id.action_search:
+                if (edtCity.getVisibility() == View.VISIBLE)
+                    hideSearchBar();
+                else
+                    showSearchBar();
+                return true;
+            case R.id.language_vi:
+                editDataLang("vi");
+                recreate();
+                return true;
+            case R.id.language_en:
+                editDataLang("en");
+                recreate();
+                return true;
+            case R.id.menu_get_location:
+                getLocationWeather();
+                return true;
+            case R.id.menu_background:
+                Toast.makeText(this, getString(R.string.comming_soon), Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.menu_share:
+                Toast.makeText(this, getString(R.string.comming_soon), Toast.LENGTH_SHORT).show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void getLocationWeather() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        //Check permission
+        if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            //when permission granted
+            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                @Override
+                public void onComplete(@NonNull Task<Location> task) {
+                    //Initialize location
+                    Location location = task.getResult();
+                    if (location != null) {
+                        //Initialize geoCder
+                        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                        //Initialize address list
+                        try {
+                            List<Address> addresses = geocoder.getFromLocation(
+                                    location.getLatitude(), location.getLongitude(), 1
+                            );
+
+                            double latitude = addresses.get(0).getLatitude();
+                            double longitude = addresses.get(0).getLongitude();
+
+                            String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + lang;
+                            getCurrentWeatherData(null, url);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+        else
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
     }
 }

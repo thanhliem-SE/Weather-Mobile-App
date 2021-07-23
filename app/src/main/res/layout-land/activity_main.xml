@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:hint="@string/city"
+            android:textColorHint="@color/black"
             android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@+id/btnGetCity"
             app:layout_constraintStart_toStartOf="parent"
@@ -123,6 +124,7 @@
             app:srcCompat="@drawable/ic_clouds" />
 
         <TextView
+
             android:id="@+id/txtHuminity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

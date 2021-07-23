@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Weather App</string>
-    <string name="city">City</string>
+    <string name="city">"City"</string>
     <string name="nation">Country</string>
     <string name="temp">Temperature</string>
     <string name="state">State</string>
@@ -8,7 +8,7 @@
     <string name="clouds">Clouds</string>
     <string name="wind">Wind</string>
     <string name="last_update">Last Update:</string>
-    <string name="more_day">More Day</string>
+    <string name="more_day">More day</string>
     <string name="city_not_valid">City Name Not Correct!</string>
     <string name="update">Update:"</string>
     <string name="get_locaton">Get current locaton</string>
@@ -18,4 +18,6 @@
     <string name="vietnamese">Vietnamese</string>
     <string name="english">English</string>
     <string name="share">Share</string>
+    <string name="srch">Search</string>
+    <string name="comming_soon">Coming soon</string>
 </resources>
