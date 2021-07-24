@@ -65,8 +65,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtNation"
-            app:srcCompat="@drawable/ic_humidity" />
+            app:layout_constraintTop_toBottomOf="@+id/txtNation" />
 
         <TextView
             android:id="@+id/txtTemp"
@@ -75,7 +74,7 @@
             android:layout_marginTop="30dp"
             android:text="@string/temp"
             android:textColor="#C62828"
-            android:textSize="40sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -85,12 +84,14 @@
             android:id="@+id/txtState"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="28dp"
+            android:gravity="center"
             android:text="@string/state"
             android:textColor="@color/black"
-            android:textSize="40sp"
+            android:textSize="25sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.505"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txtTemp" />
 
@@ -119,6 +120,7 @@
             android:layout_height="40dp"
             android:layout_margin="20dp"
             app:layout_constraintEnd_toEndOf="@id/iconWindmill"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="@id/iconHuminity"
             app:layout_constraintTop_toBottomOf="@id/txtState"
             app:srcCompat="@drawable/ic_clouds" />
@@ -164,6 +166,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
+            android:gravity="center"
             android:text="@string/last_update"
             android:textColor="@color/black"
             android:textSize="20sp"
@@ -182,5 +185,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txtCurrenDay" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

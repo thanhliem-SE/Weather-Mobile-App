@@ -1,11 +1,16 @@
 package com.liem.appthoitiet.activities;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -56,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnGetCity, btnMoreDay;
     private TextView txtCity, txtNation, txtTemp, txtState, txtHuminity, txtCloud, txtWind, txtCurrentDay;
     private ImageView imgIconWeather;
-    private String city, lang;
+    private String city, langCode, lat, lon;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -64,17 +69,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         loadData();
-        AppLanguageHelper.setLocale(MainActivity.this, lang);
+        AppLanguageHelper.setLocale(MainActivity.this, langCode.substring(0, 2));
         initializeUI();
 
         btnGetCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 city = edtCity.getText().toString().trim();
-                getCurrentWeatherData(city, null);
+                getCurrentWeatherData(city, null, null);
             }
         });
 
@@ -83,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                     city = edtCity.getText().toString().trim();
-                    getCurrentWeatherData(city, null);
+                    getCurrentWeatherData(city, null, null);
+                    return true;
                 }
                 return false;
             }
@@ -92,11 +97,11 @@ public class MainActivity extends AppCompatActivity {
         btnMoreDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=43a4ba75dc3793776a30decf39830cf4&units=metric&lang=" + lang;
+                String url = "https://api.openweathermap.org/data/2.5/forecast?q=" + city + "&appid=43a4ba75dc3793776a30decf39830cf4&units=metric&lang=" + langCode.substring(0, 2);
                 Intent intent = new Intent(MainActivity.this, SevenDaysWeatherActivity.class);
                 intent.putExtra("city", city);
                 intent.putExtra("url", url);
-                intent.putExtra("lang", lang);
+                intent.putExtra("lang", langCode);
                 startActivity(intent);
             }
         });
@@ -105,17 +110,22 @@ public class MainActivity extends AppCompatActivity {
     private void loadData() {
         SharedPreferences sharedPreferences = this.getSharedPreferences("data", Context.MODE_PRIVATE);
         if (sharedPreferences != null) {
-            city = sharedPreferences.getString("city", "");
-            lang = sharedPreferences.getString("lang", "");
+            langCode = sharedPreferences.getString("lang", "en_US");
+            lat = sharedPreferences.getString("lat", "55.5");
+            lon = sharedPreferences.getString("longitude", "37");
         } else {
-            city = "Ho Chi Minh";
-            lang = "en";
+            lat = "55.5";
+            lon = "37";
+            langCode = "en_US";
         }
     }
 
-    public void getCurrentWeatherData(String city, String url) {
-        if (url == null)
-            url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + lang;
+    public void getCurrentWeatherData(String city, String lat, String lon) {
+        String url;
+        if (city == null)
+            url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + langCode.substring(0, 2);
+        else
+            url = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + langCode.substring(0, 2);
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
@@ -126,8 +136,12 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     Long day = jsonObject.getLong("dt");
-                    String cityName = jsonObject.getString("name");
-                    updateCityName(cityName);
+                    JSONObject jsonObjectCoord = jsonObject.getJSONObject("coord");
+
+                    String city = jsonObject.getString("name");
+                    String lat = jsonObjectCoord.getString("lat");
+                    String lon = jsonObjectCoord.getString("lon");
+                    updateDataLocate(city, lat, lon);
 
                     JSONObject jsonObjectSys = jsonObject.getJSONObject("sys");
                     String nation = jsonObjectSys.getString("country");
@@ -156,10 +170,10 @@ public class MainActivity extends AppCompatActivity {
                     txtCurrentDay.setText(getString(R.string.last_update) + " " + simpleDateFormat.format(date));
 
                     CharSequence charSequence = getString(R.string.city);
-                    if (cityName.contains(charSequence))
-                        txtCity.setText(cityName);
+                    if (city.contains(charSequence))
+                        txtCity.setText(city);
                     else
-                        txtCity.setText(getString(R.string.city) + ": " + cityName);
+                        txtCity.setText(getString(R.string.city) + ": " + city);
                     txtNation.setText(getString(R.string.nation) + ": " + new Locale("", nation).getDisplayCountry());
                     txtTemp.setText(temp + "°C ");
                     txtState.setText(state.substring(0, 1).toUpperCase() + state.substring(1).toLowerCase());
@@ -184,6 +198,12 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
+    private void updateDataLocate(String city, String lat, String lon) {
+        this.city = city;
+        this.lat = lat;
+        this.lon = lon;
+    }
+
     private void editDataCity(String city) {
         SharedPreferences sharedPreferences = this.getSharedPreferences("data", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -196,6 +216,17 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("lang", langCode);
         editor.apply();
+
+        recreate();
+    }
+
+    private void restartApp() {
+        Intent mStartActivity = new Intent(this, MainActivity.class);
+        int mPendingIntentId = 123456;
+        PendingIntent mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+        AlarmManager mgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+        System.exit(0);
     }
 
     private void initializeUI() {
@@ -211,19 +242,10 @@ public class MainActivity extends AppCompatActivity {
         txtWind = (TextView) findViewById(R.id.txtWindmill);
         txtCurrentDay = (TextView) findViewById(R.id.txtCurrenDay);
         imgIconWeather = (ImageView) findViewById(R.id.iconWeather);
+        btnMoreDay.setText(getString(R.string.more_day));
 
         hideSearchBar();
-        getCurrentWeatherData(city, null);
-    }
-
-    protected void updateCityName(String cityName) {
-        city = cityName;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        getCurrentWeatherData(city, lat, lon);
     }
 
     private void hideSearchBar() {
@@ -236,43 +258,8 @@ public class MainActivity extends AppCompatActivity {
         btnGetCity.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_exit:
-                finishAffinity();
-                System.exit(0);
-                return true;
-            case R.id.action_search:
-                if (edtCity.getVisibility() == View.VISIBLE)
-                    hideSearchBar();
-                else
-                    showSearchBar();
-                return true;
-            case R.id.language_vi:
-                editDataLang("vi");
-                recreate();
-                return true;
-            case R.id.language_en:
-                editDataLang("en");
-                recreate();
-                return true;
-            case R.id.menu_get_location:
-                getLocationWeather();
-                return true;
-            case R.id.menu_background:
-                Toast.makeText(this, getString(R.string.comming_soon), Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.menu_share:
-                Toast.makeText(this, getString(R.string.comming_soon), Toast.LENGTH_SHORT).show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void getLocationWeather() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //Check permission
         if (ActivityCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
@@ -294,8 +281,7 @@ public class MainActivity extends AppCompatActivity {
                             double latitude = addresses.get(0).getLatitude();
                             double longitude = addresses.get(0).getLongitude();
 
-                            String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&appid=09b8659c8135d63a3ce586364e590ee2&units=metric&lang=" + lang;
-                            getCurrentWeatherData(null, url);
+                            getCurrentWeatherData(null, String.valueOf(latitude), String.valueOf(longitude));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -305,5 +291,71 @@ public class MainActivity extends AppCompatActivity {
         else
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+    }
+
+    private void confirmExit() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.app_name);
+        builder.setIcon(R.drawable.ic_app);
+        builder.setMessage(getString(R.string.are_you_sure))
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void controlVisibleSearchBar() {
+        if (edtCity.getVisibility() == View.VISIBLE)
+            hideSearchBar();
+        else
+            showSearchBar();
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_exit:
+                confirmExit();
+                return true;
+            case R.id.action_search:
+                controlVisibleSearchBar();
+                return true;
+            case R.id.language_vi:
+                editDataLang("vi_VN");
+                return true;
+            case R.id.language_en:
+                editDataLang("en_US");
+                return true;
+            case R.id.menu_get_location:
+                getLocationWeather();
+                return true;
+            case R.id.menu_background:
+            case R.id.menu_share:
+                Toast.makeText(this, getString(R.string.comming_soon), Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onBackPressed() {
+        confirmExit();
     }
 }

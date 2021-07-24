@@ -58,27 +58,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txtCity" />
 
+
         <ImageView
             android:id="@+id/iconWeather"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.499"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edtCity"
-            app:srcCompat="@drawable/ic_humidity" />
+            app:layout_constraintTop_toBottomOf="@+id/edtCity" />
 
         <TextView
             android:id="@+id/txtTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="4dp"
             android:text="@string/temp"
             android:textColor="#C62828"
             android:textSize="30dp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.493"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iconWeather" />
 

@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/ic_app"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppThoiTiet">
+        android:theme="@style/Theme.AppTheme">
         <activity android:name=".activities.SevenDaysWeatherActivity"></activity>
         <activity android:name=".activities.MainActivity">
             <intent-filter>

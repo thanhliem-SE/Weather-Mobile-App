@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">App Thoi Tiet</string>
+    <string name="app_name">Weather App</string>
     <string name="city">Thành phố</string>
     <string name="nation">Quốc gia</string>
     <string name="temp">Nhiệt độ</string>
@@ -21,4 +21,5 @@
     <string name="share">Chia sẻ</string>
     <string name="srch">Tìm kiếm</string>
     <string name="comming_soon">Tính năng sắp có</string>
+    <string name="are_you_sure">Bạn có chắc muốn thoát?</string>
 </resources>
