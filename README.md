@@ -18,7 +18,9 @@ A simple, useful software weather app for Android. It gathers data from [OpenWea
 https://github.com/thanhliem-SE/Weather-Mobile-App/blob/main/app/release/app-release.apk
 
 ## Contribution
-If you have any ideas or issues, don't hesitate to make contact via the Issues page.
+If you've found an error in this sample, please file an issue.
+
+Patches are encouraged and may be submitted by forking this project and submitting a pull request. Since this project is still in its very early stages, if your change is substantial, please raise an issue first to discuss it.
 
 ## Licence
-© Nguyen Thanh Liem
+© Copyright Nguyen Thanh Liem
