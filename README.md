@@ -23,4 +23,4 @@ If you've found an error in this sample, please file an issue.
 Patches are encouraged and may be submitted by forking this project and submitting a pull request. Since this project is still in its very early stages, if your change is substantial, please raise an issue first to discuss it.
 
 ## Licence
-© Copyright Nguyen Thanh Liem
+© Copyright by Nguyen Thanh Liem
