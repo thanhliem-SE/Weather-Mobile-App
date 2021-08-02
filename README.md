@@ -8,8 +8,7 @@ A simple, useful software weather app for Android. It gathers data from [OpenWea
 * Works with any city in the world
 
 ## Screenshots
-![Capture](https://user-images.githubusercontent.com/62129407/126873695-a5588300-4093-4b0a-aa6a-77ce90646791.PNG)
-![Capture2](https://user-images.githubusercontent.com/62129407/126873696-6df4a676-fe88-465e-93b4-a9725232ad09.PNG)
+<img src="https://user-images.githubusercontent.com/62129407/127867091-eab2ca33-b4e0-4977-952a-216af13b5f51.png" height="30%" width="30%"/><img src="https://user-images.githubusercontent.com/62129407/127866743-86864605-ced4-48d8-a9c8-1e3082307aee.png" height="30%" width="30%"/><img src="https://user-images.githubusercontent.com/62129407/127867246-7773ca68-2a09-4749-aca8-4d104dc58d9f.png" height="30%" width="30%"/>
 
 ## Demo
 ![5hhtlf](https://user-images.githubusercontent.com/62129407/126873866-b04e880d-7b27-4fdc-ac87-77b53ec6f1aa.gif)
