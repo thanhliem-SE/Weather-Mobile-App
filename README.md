@@ -7,6 +7,12 @@ A simple, useful software weather app for Android. It gathers data from [OpenWea
 * Detailed 5 day forecast
 * Works with any city in the world
 
+## API
+* Recycler Adapter
+* Volley
+* Piscasso
+* ...
+
 ## Screenshots
 <img src="https://user-images.githubusercontent.com/62129407/127867091-eab2ca33-b4e0-4977-952a-216af13b5f51.png" height="30%" width="30%"/><img src="https://user-images.githubusercontent.com/62129407/127866743-86864605-ced4-48d8-a9c8-1e3082307aee.png" height="30%" width="30%"/><img src="https://user-images.githubusercontent.com/62129407/127867246-7773ca68-2a09-4749-aca8-4d104dc58d9f.png" height="30%" width="30%"/>
 
